@@ -4,6 +4,22 @@
 <head>
     <meta charset="utf-8" />
     <title>MDN Games: A-Frame demo</title>
+    <style>
+
+        iframe{
+            display: none;
+        }
+
+        iframe.is-active{
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 100;
+        }
+    </style>
     <script src="aframe.min.js"></script>
 
     <!-- <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script> -->
@@ -15,20 +31,20 @@
 
 
     <script>
+        let selected = null;
         // Component to change to a sequential color on click.
         AFRAME.registerComponent('cursor-listener', {
             init: function () {
                 
 
-                this.el.addEventListener('model-loaded', function(event){
-                    //alert('test');
+                this.el.addEventListener('model-loaded', function(event){                    
                     this.setAttribute('visible', true)
                 })
-                this.el.addEventListener('mouseenter', function(event){                    
-                    let scale = 1.0;
+                this.el.addEventListener('mouseenter', function(event){                                        
 
-                    this.object3D.traverse((child) => {
-                        console.log(child);
+                    selected = this.id;
+                    this.object3D.traverse((child) => {                            
+                        //this.el.classlist.add('hovered');
                         if ( child instanceof THREE.Mesh  && child.name.includes('defaultMaterial003')) {
 
                         // add emissive property to currrent material
@@ -41,8 +57,9 @@
                     });
                 }); 
                 this.el.addEventListener('mouseleave', function (evt) {
+                    selected = null;
                     this.object3D.traverse((child) => {
-                        console.log(child);
+                        
                         if ( child instanceof THREE.Mesh  && child.name.includes('defaultMaterial003')) {
 
                         // add emissive property to currrent material
@@ -54,7 +71,7 @@
                         }
                     });
 
-                    console.log('I was clicked at: ', evt.detail.intersection.point);
+                    ///console.log('I was clicked at: ', evt.detail.intersection.point);
                 });
                 // this.el.addEventListener('mouseleave', function (evt) {
                 //     const originalColor = this.getAttribute('data-og-color');
@@ -94,21 +111,15 @@
 
                 let didHit = false
 
-                for (const obj of document.querySelectorAll(this.data.selector)) {
-                    // check if y value within range
+
+
+                for (const obj of document.querySelectorAll(this.data.selector)) {                    
 
                     if (this.myPos.y < obj.object3D.position.y || this.myPos.y > obj.object3D.position.y + obj.components.geometry.data.height) continue
                     const distanceTo = new THREE.Vector3(this.myPos.x, 0, this.myPos.z).distanceTo(new THREE.Vector3(obj.object3D.position.x, 0, obj.object3D.position.z));
-                    //obj.object3D.getWorldPosition(this.targetPos)
-                    //const distanceTo = this.myPos.distanceTo(this.targetPos)
-                    // console.log(distanceTo);
-                    //console.log(obj.components.geometry.data);
+                   
 
-                    // calculate if there is collision based off width, height, and depth of box
-
-                    if (distanceTo <= this.data.distance) {
-                        //alert('hit');
-                        //console.log('hit', obj)
+                    if (distanceTo <= this.data.distance) {                        
                         didHit = true
                         break
                     }
@@ -122,18 +133,45 @@
             },
         })
 
+        // event listener on space bar keydown
+        document.addEventListener('keydown', function(event){
+            if (event.code === 'Space') {
+
+                const game = document.getElementById(`${selected.replace('-model','')}-game`);
+                
+                game.classList.add('is-active');
+
+                //document.getElementById('speaking-model').setAttribute('visible', true);
+                //document.getElementById('speaking-model').setAttribute('position', '0 1.25 -5');
+                //document.getElementById('speaking-model').setAttribute('scale', '1 1 1');
+                //document.getElementById('speaking-model').setAttribute('rotation', '0 0 0');
+                //document.getElementById('speaking-model').setAtt
+            }
+            if (event.code === 'Escape') {
+                const iframes = document.querySelectorAll('iframe');
+                iframes.forEach(iframe => {
+                    iframe.classList.remove('is-active');
+                })
+                
+            }
+        })
+
+        
+
+
+
 
     </script>
 </head>
 
 <body>
 
-    <a-scene physics="debug: true"
+    <a-scene
         inspector="url: https://cdn.jsdelivr.net/gh/aframevr/aframe-inspector@master/dist/aframe-inspector.min.js">
 
 
 
-        <a-entity camera position="0 1.6 0" wasd-controls="acceleration: 20" id="cameraRig"
+        <a-entity camera position="0 1.6 7" wasd-controls="acceleration: 20" id="cameraRig"
             sphere-collider-constraint="selector: .node">
             <a-entity cursor="fuse: true; fuseTimeout: 500"
                         position="0 0 -1"
@@ -144,21 +182,21 @@
         </a-entity>
 
         <a-assets>
-            <img id="carpet" src="./assets/carpet.jpg"></img>
-            <img src="/assets/texture/carpets/Carpet006_1K_AmbientOcclusion.jpg" alt="" id="carpet-ao">
-            <img src="/assets/texture/carpets/Carpet006_1K_Color.jpg" alt="" id="carpet-base">
-            <img src="/assets/texture/carpets/Carpet006_1K_Displacement.jpg" alt="" id="carpet-displacement">
-            <img src="/assets/texture/carpets/Carpet006_1K_NormalDX.jpg" alt="" id="carpet-normal">
-            <img src="/assets/texture/carpets/Carpet006_1K_NormalGL.jpg" alt="" id="carpet-normal-gl">
-            <img src="/assets/texture/carpets/Carpet006_1K_Roughness.jpg" alt="" id="carpet-roughness">
+            <img id="carpet" src="./assets/carpet.jpg"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_AmbientOcclusion.jpg" alt="" id="carpet-ao"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_Color.jpg" alt="" id="carpet-base"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_Displacement.jpg" alt="" id="carpet-displacement"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_NormalDX.jpg" alt="" id="carpet-normal"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_NormalGL.jpg" alt="" id="carpet-normal-gl"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_Roughness.jpg" alt="" id="carpet-roughness"/>
 
 
-            <img src="/assets/texture/brick/PaintedBricks001_1K_AmbientOcclusion.jpg" alt="" id="brick-ao">
-            <img src="/assets/texture/brick/PaintedBricks001_1K_Color.jpg" alt="" id="brick-base">
-            <img src="/assets/texture/brick/PaintedBricks001_1K_Displacement.jpg" alt="" id="brick-displacement">
-            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalDX.jpg" alt="" id="brick-normal">
-            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalGL.jpg" alt="" id="brick-normal-gl">
-            <img src="/assets/texture/brick/PaintedBricks001_1K_Roughness.jpg" alt="" id="brick-roughness">
+            <img src="/assets/texture/brick/PaintedBricks001_1K_AmbientOcclusion.jpg" alt="" id="brick-ao"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Color.jpg" alt="" id="brick-base"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Displacement.jpg" alt="" id="brick-displacement"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalDX.jpg" alt="" id="brick-normal"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalGL.jpg" alt="" id="brick-normal-gl"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Roughness.jpg" alt="" id="brick-roughness"/>
 
 
             <a-asset-item id="speaking" src="./assets/speaking.gltf"></a-asset-item>
@@ -187,18 +225,21 @@
             height="40" src="#brick-base"
             material="side: back; ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
             geometry="width: 10; height: 10" id="front wall"></a-plane>
-        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="-3.25 0 0"
-            rotation="0 90 0" width="40" height="40" geometry="" color="#000011" id="left wall"></a-plane>
+        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="-2.5 0 0"
+            rotation="0 90 0" width="40" height="40" geometry="" color="#000011" id="left wall" class="node">
+            <a-entity id="neon-left" geometry="depth: 0.1; height: 0.04; width: 10"
+            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
+        </a-plane>
 
-        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="3.25 0 0"
-            rotation="0 -90 0" width="40" height="40" geometry="" color="#000011" id="right wall"></a-plane>
+        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="2.5 0 0"
+            rotation="0 -90 0" width="40" height="40" geometry="" color="#000011" id="right wall" class="node"></a-plane>
 
         <a-plane roughness="1" repeat="20 20" src="#carpet-base" shadow="" position="0 -0.71131 0" rotation="-90 0 0"
             width="40" height="40"
             material="ambientOcclusionMap: #carpet-ao; displacementMap: #carpet-displacement; normalMap: #carpet-normal; roughnessMap: #carpet-roughness"
             geometry="width: 20; height: 20" color="#be1700" id="floor" static-body></a-plane>
 
-        <a-plane roughness="1" repeat="20 20" src="#carpet" material="color: #001133; side: back;" shadow=""
+        <a-plane roughness="1" repeat="20 20" src="#carpet" material="color: #000000; side: back;" shadow=""
             position="0.001 3.41437 0" rotation="-90 0 0" width="40" height="40" geometry="width: 20; height: 20"
             id="ceiling"></a-plane>
         <a-sky id="sky" color="#000"></a-sky>
@@ -213,7 +254,10 @@
 
     </a-scene>
 
-
+    <iframe src="https://fernakr.github.io/feelings/bingo" id="bingo-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/anxiety" id="anxiety-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/speaking" id="speaking-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/life" id="struggle-game" frameborder="0"></iframe>
 </body>
 
 </html>
