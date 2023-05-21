@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8" />
+    <title>MDN Games: A-Frame demo</title>
+    <script src="aframe.min.js"></script>
+
+    <!-- <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script> -->
+
+    <script src="https://kripken.github.io/ammo.js/builds/ammo.wasm.js"></script>
+
+    <script
+        src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.js"></script>
+
+
+    <script>
+        // Component to change to a sequential color on click.
+        AFRAME.registerComponent('cursor-listener', {
+            init: function () {
+                
+
+                this.el.addEventListener('model-loaded', function(event){
+                    //alert('test');
+                    this.setAttribute('visible', true)
+                })
+                this.el.addEventListener('mouseenter', function(event){                    
+                    let scale = 1.0;
+
+                    this.object3D.traverse((child) => {
+                        console.log(child);
+                        if ( child instanceof THREE.Mesh  && child.name.includes('defaultMaterial003')) {
+
+                        // add emissive property to currrent material
+                        child.material.emissive = new THREE.Color(0xffffff);
+                        child.material.emissiveIntensity = 0.3;
+                        child.material.roughness = 0.5;
+
+
+                        }
+                    });
+                }); 
+                this.el.addEventListener('mouseleave', function (evt) {
+                    this.object3D.traverse((child) => {
+                        console.log(child);
+                        if ( child instanceof THREE.Mesh  && child.name.includes('defaultMaterial003')) {
+
+                        // add emissive property to currrent material
+                        child.material.emissive = new THREE.Color(0x000000);
+                        // child.material.emissiveIntensity = 0.5;
+                        // child.material.roughness = 0.5;
+
+
+                        }
+                    });
+
+                    console.log('I was clicked at: ', evt.detail.intersection.point);
+                });
+                // this.el.addEventListener('mouseleave', function (evt) {
+                //     const originalColor = this.getAttribute('data-og-color');
+                //     this.setAttribute('material', 'color', originalColor);
+                // });
+            }
+        });
+
+        AFRAME.registerComponent('sphere-collider-constraint', {
+            schema: {
+                selector: {
+                    default: '',
+                },
+                distance: {
+                    default: 0.5,
+                },
+            },
+
+            init: function () {
+
+                this.lastPosition = new THREE.Vector3(0, 0,)
+
+                this.el.object3D.getWorldPosition(this.lastPosition)
+
+                this.myPos = new THREE.Vector3()
+                this.el.object3D.getWorldPosition(this.myPos)
+
+                this.targetPos = new THREE.Vector3()
+            },
+
+            tick: function () {
+
+                this.el.object3D.getWorldPosition(this.myPos);
+
+                if (this.myPos.distanceTo(this.lastPosition) === 0) return
+
+
+                let didHit = false
+
+                for (const obj of document.querySelectorAll(this.data.selector)) {
+                    // check if y value within range
+
+                    if (this.myPos.y < obj.object3D.position.y || this.myPos.y > obj.object3D.position.y + obj.components.geometry.data.height) continue
+                    const distanceTo = new THREE.Vector3(this.myPos.x, 0, this.myPos.z).distanceTo(new THREE.Vector3(obj.object3D.position.x, 0, obj.object3D.position.z));
+                    //obj.object3D.getWorldPosition(this.targetPos)
+                    //const distanceTo = this.myPos.distanceTo(this.targetPos)
+                    // console.log(distanceTo);
+                    //console.log(obj.components.geometry.data);
+
+                    // calculate if there is collision based off width, height, and depth of box
+
+                    if (distanceTo <= this.data.distance) {
+                        //alert('hit');
+                        //console.log('hit', obj)
+                        didHit = true
+                        break
+                    }
+                }
+                if (didHit) {
+                    this.el.object3D.position.copy(this.lastPosition)
+                    this.el.object3D.parent.worldToLocal(this.el.object3D.position)
+                } else {
+                    this.el.object3D.getWorldPosition(this.lastPosition)
+                }
+            },
+        })
+
+
+    </script>
+</head>
+
+<body>
+
+    <a-scene physics="debug: true"
+        inspector="url: https://cdn.jsdelivr.net/gh/aframevr/aframe-inspector@master/dist/aframe-inspector.min.js">
+
+
+
+        <a-entity camera position="0 1.6 0" wasd-controls="acceleration: 20" id="cameraRig"
+            sphere-collider-constraint="selector: .node">
+            <a-entity cursor="fuse: true; fuseTimeout: 500"
+                        position="0 0 -1"
+                        geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.03"
+                        material="color: white; opacity: 0.2 shader: flat">
+            </a-entity>
+
+        </a-entity>
+
+        <a-assets>
+            <img id="carpet" src="./assets/carpet.jpg"></img>
+            <img src="/assets/texture/carpets/Carpet006_1K_AmbientOcclusion.jpg" alt="" id="carpet-ao">
+            <img src="/assets/texture/carpets/Carpet006_1K_Color.jpg" alt="" id="carpet-base">
+            <img src="/assets/texture/carpets/Carpet006_1K_Displacement.jpg" alt="" id="carpet-displacement">
+            <img src="/assets/texture/carpets/Carpet006_1K_NormalDX.jpg" alt="" id="carpet-normal">
+            <img src="/assets/texture/carpets/Carpet006_1K_NormalGL.jpg" alt="" id="carpet-normal-gl">
+            <img src="/assets/texture/carpets/Carpet006_1K_Roughness.jpg" alt="" id="carpet-roughness">
+
+
+            <img src="/assets/texture/brick/PaintedBricks001_1K_AmbientOcclusion.jpg" alt="" id="brick-ao">
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Color.jpg" alt="" id="brick-base">
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Displacement.jpg" alt="" id="brick-displacement">
+            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalDX.jpg" alt="" id="brick-normal">
+            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalGL.jpg" alt="" id="brick-normal-gl">
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Roughness.jpg" alt="" id="brick-roughness">
+
+
+            <a-asset-item id="speaking" src="./assets/speaking.gltf"></a-asset-item>
+            <a-asset-item id="struggle" src="./assets/struggle.gltf"></a-asset-item>
+            <a-asset-item id="anxiety" src="./assets/anxiety.gltf"></a-asset-item>
+            <a-asset-item id="bingo" src="./assets/bingo.gltf"></a-asset-item>
+        </a-assets>
+
+        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="speaking-model"
+            visible="false"
+            shadow="cast: true" cursor-listener gltf-model="#speaking" position=".25 1.25 -5"></a-entity>
+        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="struggle-model"
+        visible="false" shadow="cast: true" cursor-listener gltf-model="#struggle" position="-0.75 1.25 -5"></a-entity>
+        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="anxiety-model"
+        visible="false" shadow="cast: true" cursor-listener gltf-model="#anxiety" position="-1.75 1.25 -5"></a-entity>
+        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="bingo-model"
+        visible="false" shadow="cast: true" cursor-listener gltf-model="#bingo" position="-2.75 1.25 -5"></a-entity>
+
+
+        <a-plane roughness="1" repeat="9.5 9.5" shadow="" position="0 2.105 -7.19215" rotation="0 0 0" width="40"
+            height="40" color="#000011" src="#brick-base"
+            material="ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
+            geometry="width: 10; height: 10" id="back wall"></a-plane>
+
+        <a-plane roughness="1" repeat="20 20" shadow="" position="0 1.52041 2.20959" rotation="0 0 -90" width="40"
+            height="40" src="#brick-base"
+            material="side: back; ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
+            geometry="width: 10; height: 10" id="front wall"></a-plane>
+        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="-3.25 0 0"
+            rotation="0 90 0" width="40" height="40" geometry="" color="#000011" id="left wall"></a-plane>
+
+        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="3.25 0 0"
+            rotation="0 -90 0" width="40" height="40" geometry="" color="#000011" id="right wall"></a-plane>
+
+        <a-plane roughness="1" repeat="20 20" src="#carpet-base" shadow="" position="0 -0.71131 0" rotation="-90 0 0"
+            width="40" height="40"
+            material="ambientOcclusionMap: #carpet-ao; displacementMap: #carpet-displacement; normalMap: #carpet-normal; roughnessMap: #carpet-roughness"
+            geometry="width: 20; height: 20" color="#be1700" id="floor" static-body></a-plane>
+
+        <a-plane roughness="1" repeat="20 20" src="#carpet" material="color: #001133; side: back;" shadow=""
+            position="0.001 3.41437 0" rotation="-90 0 0" width="40" height="40" geometry="width: 20; height: 20"
+            id="ceiling"></a-plane>
+        <a-sky id="sky" color="#000"></a-sky>
+        <a-entity id="light" light="intensity: 1; castShadow: true; angle: 60.93; color: #ff2200; type: point"
+            position="1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
+        <a-entity id="light-2" light="intensity: 1; castShadow: true; angle: 60.93; color: #0000ff; type: point"
+            position="-1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
+        <a-entity position="-0.128 3.43 -6.222" id="neon" geometry="depth: 0.1; height: 0.04; width: 10"
+            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
+        <a-entity position="-0.128 0.31 -6.222" id="neon2" geometry="depth: 0.1; height: 0.04; width: 10"
+            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
+
+    </a-scene>
+
+
+</body>
+
+</html>
