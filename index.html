@@ -5,6 +5,40 @@
     <meta charset="utf-8" />
     <title>Are we having fun yet?</title>
     <style>
+
+        :root{
+            --primary-color: #f2ff00;
+            --secondary-color: #ff5000;
+
+        }
+        .escape{
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: var(--primary-color);
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+            box-shadow: 1px 1px 1px 0 rgba(0,0,0,0.4);
+            font-weight: bold;            
+            font-family: Geneva, Tahoma, sans-serif;
+            text-transform: uppercase;     
+            padding: 0.3rem 0.7rem;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            border: 0;     
+            cursor: pointer;       
+            transition: 0.25s opacity 0.25s;
+        }
+            .escape.is-active{
+                transition: 0.5s opacity 0.3s ease-in-out;
+                opacity: 0.8;
+                pointer-events: all;
+            }
+
+            .escape.is-pressed{
+                background-color: var(--secondary-color);
+            }
+
         .instructions{
             position: absolute;
             top: 75%;
@@ -13,9 +47,9 @@
             font-size: 0.8rem;
             text-align: center;
             opacity: 0;
-            transition: opacity 0.25s ease-in-out;
+            transition: 0.25s opacity ease-in-out;
             pointer-events: none;
-            background-color: #f2ff00;
+            background-color:  var(--primary-color);
             padding: 0.3rem 0.7rem;
             text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
             box-shadow: 1px 1px 1px 0 rgba(0,0,0,0.4);
@@ -30,20 +64,14 @@
             }
 
             .instructions.is-pressed{
-                background-color: red;
+                background-color: var(--secondary-color);
             }
         iframe{
             opacity: 0;
             pointer-events: none;
             z-index: -1;
-            transition: 1s all;
+            transition: 1s all 0.1s;
             transform: scale(0.01);
-        }
-
-        iframe.is-active{
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: all;
             display: block;
             position: absolute;
             top: 0;
@@ -51,6 +79,12 @@
             width: 100%;
             height: 100vh;
             z-index: 100;
+        }
+
+        iframe.is-active{
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: all;                        
         }
     </style>
     <script src="aframe.min.js"></script>
@@ -158,15 +192,31 @@
 
     </a-scene>
 
-    <iframe src="https://fernakr.github.io/feelings/bingo" id="bingo-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/anxiety" id="anxiety-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/speaking" id="speaking-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/life" id="struggle-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/bingo/?iframe=1" id="bingo-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/anxiety/?iframe=1" id="anxiety-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/speaking/?iframe=1" id="speaking-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/life/?iframe=1" id="struggle-game" frameborder="0"></iframe>
     <div class="instructions is-active">WASD or arrows to move</div>
+
+    <button class="escape">Esc to quit</button>
 
     <script>
         let started = false;
+        const escapeButton = document.querySelector('.escape');
 
+        const closeAllGames = () => {
+            escapeButton.classList.add('is-pressed');
+            escapeButton.classList.remove('is-active');
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.classList.remove('is-active');
+            })
+            instructionsElem.classList.remove('is-pressed');
+        }
+        escapeButton.addEventListener('click', function(event){
+            
+            closeAllGames();
+        })
         document.addEventListener('keydown', function(event){
             const code = event.code;
             if (started === false){
@@ -183,12 +233,12 @@
             }
         });
 
-        document.addEventListener('keyup', function(event){
-            const code = event.code;
-            if (code === 'Space'){
-                instructionsElem.classList.remove('is-pressed');
-            }
-        });
+        // document.addEventListener('keyup', function(event){
+        //     const code = event.code;
+        //     if (code === 'Space'){
+                
+        //     }
+        // });
         let selected = null;
         const instructionsElem = document.querySelector('.instructions');        
         // Component to change to a sequential color on click.
@@ -307,18 +357,12 @@
                 const game = document.getElementById(`${selected.replace('-model','')}-game`);
                 
                 game.classList.add('is-active');
+                escapeButton.classList.add('is-active');
+                escapeButton.classList.remove('is-pressed');
 
-                //document.getElementById('speaking-model').setAttribute('visible', true);
-                //document.getElementById('speaking-model').setAttribute('position', '0 1.25 -5');
-                //document.getElementById('speaking-model').setAttribute('scale', '1 1 1');
-                //document.getElementById('speaking-model').setAttribute('rotation', '0 0 0');
-                //document.getElementById('speaking-model').setAtt
             }
-            if (event.code === 'Escape') {
-                const iframes = document.querySelectorAll('iframe');
-                iframes.forEach(iframe => {
-                    iframe.classList.remove('is-active');
-                })
+            if (event.code === 'Escape') {                
+                closeAllGames();
                 
             }
         })
