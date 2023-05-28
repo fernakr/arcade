@@ -28,6 +28,10 @@
             .instructions.is-active{
                 opacity: 0.8;
             }
+
+            .instructions.is-pressed{
+                background-color: red;
+            }
         iframe{
             opacity: 0;
             pointer-events: none;
@@ -74,7 +78,7 @@
 
                 raycaster="far: 2"
                 cursor="fuse: true; fuseTimeout: 500"
-                position="0 0 -0.1"
+                position="0 0 -0.01"
                 geometry="primitive: ring; radiusInner: 0.001; radiusOuter: 0.003"
                 material="color: white; opacity: 0 shader: flat">
             </a-entity>
@@ -161,12 +165,28 @@
     <div class="instructions is-active">WASD or arrows to move</div>
 
     <script>
+        let started = false;
 
         document.addEventListener('keydown', function(event){
-            //console.log(event.code);
-            const codes = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];
-            if (codes.includes(event.code) || event.code.includes('Arrow')) {
-                instructionsElem.classList.remove('is-active');
+            const code = event.code;
+            if (started === false){
+                const codes = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];
+                if (codes.includes(code) || code.includes('Arrow')) {
+                    instructionsElem.classList.remove('is-active');
+                    instructionsElem.classList.add('is-pressed');
+                    started = true;
+                }
+            }else{
+                if (code === 'Space'){
+                    instructionsElem.classList.add('is-pressed');
+                }
+            }
+        });
+
+        document.addEventListener('keyup', function(event){
+            const code = event.code;
+            if (code === 'Space'){
+                instructionsElem.classList.remove('is-pressed');
             }
         });
         let selected = null;
@@ -177,12 +197,12 @@
                 
                 const setInstructions = () => 
                 {
+                    instructionsElem.classList.remove('is-pressed');
                     const activeClass = 'is-active';
                     if (selected){
                         instructionsElem.innerHTML = 'Press Space to Play';
                         instructionsElem.classList.add(activeClass);
-                    }else{
-                        //instructionsElem.innerHTML = '';
+                    }else{                        
                         instructionsElem.classList.remove(activeClass);
                     }
                     
@@ -192,8 +212,9 @@
                     this.setAttribute('visible', true)
                 })
                 this.el.addEventListener('mouseenter', function(event){                                        
-
+                    
                     selected = this.id;
+                    //console.log(selected);
                     this.object3D.traverse((child) => {                            
                         //this.el.classlist.add('hovered');
                         if ( child instanceof THREE.Mesh  && child.name.includes('defaultMaterial003')) {
