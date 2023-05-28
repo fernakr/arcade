@@ -3,14 +3,43 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>MDN Games: A-Frame demo</title>
+    <title>Are we having fun yet?</title>
     <style>
+        .instructions{
+            position: absolute;
+            top: 75%;
+            left: 50%;
+            transform: translate(-50%, -50%);            
+            font-size: 0.8rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+            pointer-events: none;
+            background-color: #f2ff00;
+            padding: 0.3rem 0.7rem;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+            box-shadow: 1px 1px 1px 0 rgba(0,0,0,0.4);
+            font-weight: bold;
+            
+            font-family: Geneva, Tahoma, sans-serif;
+            text-transform: uppercase;            
+        }
 
+            .instructions.is-active{
+                opacity: 0.8;
+            }
         iframe{
-            display: none;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+            transition: 1s all;
+            transform: scale(0.01);
         }
 
         iframe.is-active{
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: all;
             display: block;
             position: absolute;
             top: 0;
@@ -30,12 +59,134 @@
         src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.js"></script>
 
 
+</head>
+
+<body>
+
+    <a-scene
+    vr-mode-ui="enabled: false">
+
+
+
+        <a-entity camera position="0 1.6 7" wasd-controls="acceleration: 20" id="cameraRig"
+            sphere-collider-constraint="selector: .node">
+            <a-entity 
+
+                raycaster="far: 2"
+                cursor="fuse: true; fuseTimeout: 500"
+                position="0 0 -0.1"
+                geometry="primitive: ring; radiusInner: 0.001; radiusOuter: 0.003"
+                material="color: white; opacity: 0 shader: flat">
+            </a-entity>
+
+        </a-entity>
+
+        <a-assets>
+            <img id="carpet" src="./assets/carpet.jpg"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_AmbientOcclusion.jpg" alt="" id="carpet-ao"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_Color.jpg" alt="" id="carpet-base"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_Displacement.jpg" alt="" id="carpet-displacement"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_NormalDX.jpg" alt="" id="carpet-normal"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_NormalGL.jpg" alt="" id="carpet-normal-gl"/>
+            <img src="/assets/texture/carpets/Carpet006_1K_Roughness.jpg" alt="" id="carpet-roughness"/>
+
+
+            <img src="/assets/texture/brick/PaintedBricks001_1K_AmbientOcclusion.jpg" alt="" id="brick-ao"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Color.jpg" alt="" id="brick-base"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Displacement.jpg" alt="" id="brick-displacement"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalDX.jpg" alt="" id="brick-normal"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalGL.jpg" alt="" id="brick-normal-gl"/>
+            <img src="/assets/texture/brick/PaintedBricks001_1K_Roughness.jpg" alt="" id="brick-roughness"/>
+
+
+            <a-asset-item id="speaking" src="./assets/speaking.gltf"></a-asset-item>
+            <a-asset-item id="struggle" src="./assets/struggle.gltf"></a-asset-item>
+            <a-asset-item id="anxiety" src="./assets/anxiety.gltf"></a-asset-item>
+            <a-asset-item id="bingo" src="./assets/bingo.gltf"></a-asset-item>
+        </a-assets>
+
+        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="speaking-model"
+            visible="false"
+            shadow="cast: true" cursor-listener gltf-model="#speaking" position=".25 1.25 -5"></a-entity>
+        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="struggle-model"
+        visible="false" shadow="cast: true" cursor-listener gltf-model="#struggle" position="-0.75 1.25 -5"></a-entity>
+        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="anxiety-model"
+        visible="false" shadow="cast: true" cursor-listener gltf-model="#anxiety" position="-1.75 1.25 -5"></a-entity>
+        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="bingo-model"
+        visible="false" shadow="cast: true" cursor-listener gltf-model="#bingo" position="-2.75 1.25 -5"></a-entity>
+
+
+        <a-plane roughness="1" repeat="9.5 9.5" shadow="" position="0 2.105 -7.19215" rotation="0 0 0" width="40"
+            height="40" color="#000011" src="#brick-base"
+            material="ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
+            geometry="width: 10; height: 10" id="back wall"></a-plane>
+
+        <a-plane roughness="1" repeat="20 20" shadow="" position="0 1.52041 2.20959" rotation="0 0 -90" width="40"
+            height="40" src="#brick-base"
+            material="side: back; ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
+            geometry="width: 10; height: 10" id="front wall"></a-plane>
+        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="-2.5 0 0"
+            rotation="0 90 0" width="40" height="40" geometry="" color="#000011" id="left wall" class="node">
+            <a-entity id="neon-left" geometry="depth: 0.1; height: 0.04; width: 10"
+            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
+        </a-plane>
+
+        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="2.5 0 0"
+            rotation="0 -90 0" width="40" height="40" geometry="" color="#000011" id="right wall" class="node"></a-plane>
+
+        <a-plane roughness="1" repeat="20 20" src="#carpet-base" shadow="" position="0 -0.71131 0" rotation="-90 0 0"
+            width="40" height="40"
+            material="ambientOcclusionMap: #carpet-ao; displacementMap: #carpet-displacement; normalMap: #carpet-normal; roughnessMap: #carpet-roughness"
+            geometry="width: 20; height: 20" color="#be1700" id="floor" static-body></a-plane>
+
+        <a-plane roughness="1" repeat="20 20" src="#carpet" material="color: #000000; side: back;" shadow=""
+            position="0.001 3.41437 0" rotation="-90 0 0" width="40" height="40" geometry="width: 20; height: 20"
+            id="ceiling"></a-plane>
+        <a-sky id="sky" color="#000"></a-sky>
+        <a-entity id="light" light="intensity: 1; castShadow: true; angle: 60.93; color: #ff2200; type: point"
+            position="1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
+        <a-entity id="light-2" light="intensity: 1; castShadow: true; angle: 60.93; color: #0000ff; type: point"
+            position="-1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
+        <a-entity position="-0.128 3.43 -6.222" id="neon" geometry="depth: 0.1; height: 0.04; width: 10"
+            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
+        <a-entity position="-0.128 0.31 -6.222" id="neon2" geometry="depth: 0.1; height: 0.04; width: 10"
+            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
+
+    </a-scene>
+
+    <iframe src="https://fernakr.github.io/feelings/bingo" id="bingo-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/anxiety" id="anxiety-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/speaking" id="speaking-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/life" id="struggle-game" frameborder="0"></iframe>
+    <div class="instructions is-active">WASD or arrows to move</div>
+
     <script>
+
+        document.addEventListener('keydown', function(event){
+            //console.log(event.code);
+            const codes = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];
+            if (codes.includes(event.code) || event.code.includes('Arrow')) {
+                instructionsElem.classList.remove('is-active');
+            }
+        });
         let selected = null;
+        const instructionsElem = document.querySelector('.instructions');        
         // Component to change to a sequential color on click.
         AFRAME.registerComponent('cursor-listener', {
             init: function () {
                 
+                const setInstructions = () => 
+                {
+                    const activeClass = 'is-active';
+                    if (selected){
+                        instructionsElem.innerHTML = 'Press Space to Play';
+                        instructionsElem.classList.add(activeClass);
+                    }else{
+                        //instructionsElem.innerHTML = '';
+                        instructionsElem.classList.remove(activeClass);
+                    }
+                    
+                }
 
                 this.el.addEventListener('model-loaded', function(event){                    
                     this.setAttribute('visible', true)
@@ -55,23 +206,18 @@
 
                         }
                     });
+                    setInstructions();
                 }); 
                 this.el.addEventListener('mouseleave', function (evt) {
                     selected = null;
                     this.object3D.traverse((child) => {
                         
-                        if ( child instanceof THREE.Mesh  && child.name.includes('defaultMaterial003')) {
-
-                        // add emissive property to currrent material
-                        child.material.emissive = new THREE.Color(0x000000);
-                        // child.material.emissiveIntensity = 0.5;
-                        // child.material.roughness = 0.5;
-
-
+                        if ( child instanceof THREE.Mesh && child.name.includes('defaultMaterial003')) {                        
+                            child.material.emissive = new THREE.Color(0x000000);                        
                         }
                     });
-
-                    ///console.log('I was clicked at: ', evt.detail.intersection.point);
+                    setInstructions();
+                    
                 });
                 // this.el.addEventListener('mouseleave', function (evt) {
                 //     const originalColor = this.getAttribute('data-og-color');
@@ -162,102 +308,6 @@
 
 
     </script>
-</head>
-
-<body>
-
-    <a-scene
-        inspector="url: https://cdn.jsdelivr.net/gh/aframevr/aframe-inspector@master/dist/aframe-inspector.min.js">
-
-
-
-        <a-entity camera position="0 1.6 7" wasd-controls="acceleration: 20" id="cameraRig"
-            sphere-collider-constraint="selector: .node">
-            <a-entity cursor="fuse: true; fuseTimeout: 500"
-                        position="0 0 -1"
-                        geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.03"
-                        material="color: white; opacity: 0.2 shader: flat">
-            </a-entity>
-
-        </a-entity>
-
-        <a-assets>
-            <img id="carpet" src="./assets/carpet.jpg"/>
-            <img src="/assets/texture/carpets/Carpet006_1K_AmbientOcclusion.jpg" alt="" id="carpet-ao"/>
-            <img src="/assets/texture/carpets/Carpet006_1K_Color.jpg" alt="" id="carpet-base"/>
-            <img src="/assets/texture/carpets/Carpet006_1K_Displacement.jpg" alt="" id="carpet-displacement"/>
-            <img src="/assets/texture/carpets/Carpet006_1K_NormalDX.jpg" alt="" id="carpet-normal"/>
-            <img src="/assets/texture/carpets/Carpet006_1K_NormalGL.jpg" alt="" id="carpet-normal-gl"/>
-            <img src="/assets/texture/carpets/Carpet006_1K_Roughness.jpg" alt="" id="carpet-roughness"/>
-
-
-            <img src="/assets/texture/brick/PaintedBricks001_1K_AmbientOcclusion.jpg" alt="" id="brick-ao"/>
-            <img src="/assets/texture/brick/PaintedBricks001_1K_Color.jpg" alt="" id="brick-base"/>
-            <img src="/assets/texture/brick/PaintedBricks001_1K_Displacement.jpg" alt="" id="brick-displacement"/>
-            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalDX.jpg" alt="" id="brick-normal"/>
-            <img src="/assets/texture/brick/PaintedBricks001_1K_NormalGL.jpg" alt="" id="brick-normal-gl"/>
-            <img src="/assets/texture/brick/PaintedBricks001_1K_Roughness.jpg" alt="" id="brick-roughness"/>
-
-
-            <a-asset-item id="speaking" src="./assets/speaking.gltf"></a-asset-item>
-            <a-asset-item id="struggle" src="./assets/struggle.gltf"></a-asset-item>
-            <a-asset-item id="anxiety" src="./assets/anxiety.gltf"></a-asset-item>
-            <a-asset-item id="bingo" src="./assets/bingo.gltf"></a-asset-item>
-        </a-assets>
-
-        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="speaking-model"
-            visible="false"
-            shadow="cast: true" cursor-listener gltf-model="#speaking" position=".25 1.25 -5"></a-entity>
-        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="struggle-model"
-        visible="false" shadow="cast: true" cursor-listener gltf-model="#struggle" position="-0.75 1.25 -5"></a-entity>
-        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="anxiety-model"
-        visible="false" shadow="cast: true" cursor-listener gltf-model="#anxiety" position="-1.75 1.25 -5"></a-entity>
-        <a-entity geometry="primitive: box; width: 1; height: 10; depth: 1" class="node" id="bingo-model"
-        visible="false" shadow="cast: true" cursor-listener gltf-model="#bingo" position="-2.75 1.25 -5"></a-entity>
-
-
-        <a-plane roughness="1" repeat="9.5 9.5" shadow="" position="0 2.105 -7.19215" rotation="0 0 0" width="40"
-            height="40" color="#000011" src="#brick-base"
-            material="ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
-            geometry="width: 10; height: 10" id="back wall"></a-plane>
-
-        <a-plane roughness="1" repeat="20 20" shadow="" position="0 1.52041 2.20959" rotation="0 0 -90" width="40"
-            height="40" src="#brick-base"
-            material="side: back; ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
-            geometry="width: 10; height: 10" id="front wall"></a-plane>
-        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="-2.5 0 0"
-            rotation="0 90 0" width="40" height="40" geometry="" color="#000011" id="left wall" class="node">
-            <a-entity id="neon-left" geometry="depth: 0.1; height: 0.04; width: 10"
-            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
-        </a-plane>
-
-        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="2.5 0 0"
-            rotation="0 -90 0" width="40" height="40" geometry="" color="#000011" id="right wall" class="node"></a-plane>
-
-        <a-plane roughness="1" repeat="20 20" src="#carpet-base" shadow="" position="0 -0.71131 0" rotation="-90 0 0"
-            width="40" height="40"
-            material="ambientOcclusionMap: #carpet-ao; displacementMap: #carpet-displacement; normalMap: #carpet-normal; roughnessMap: #carpet-roughness"
-            geometry="width: 20; height: 20" color="#be1700" id="floor" static-body></a-plane>
-
-        <a-plane roughness="1" repeat="20 20" src="#carpet" material="color: #000000; side: back;" shadow=""
-            position="0.001 3.41437 0" rotation="-90 0 0" width="40" height="40" geometry="width: 20; height: 20"
-            id="ceiling"></a-plane>
-        <a-sky id="sky" color="#000"></a-sky>
-        <a-entity id="light" light="intensity: 1; castShadow: true; angle: 60.93; color: #ff2200; type: point"
-            position="1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
-        <a-entity id="light-2" light="intensity: 1; castShadow: true; angle: 60.93; color: #0000ff; type: point"
-            position="-1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
-        <a-entity position="-0.128 3.43 -6.222" id="neon" geometry="depth: 0.1; height: 0.04; width: 10"
-            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
-        <a-entity position="-0.128 0.31 -6.222" id="neon2" geometry="depth: 0.1; height: 0.04; width: 10"
-            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
-
-    </a-scene>
-
-    <iframe src="https://fernakr.github.io/feelings/bingo" id="bingo-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/anxiety" id="anxiety-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/speaking" id="speaking-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/life" id="struggle-game" frameborder="0"></iframe>
 </body>
 
 </html>
