@@ -198,7 +198,7 @@
     <iframe src="https://fernakr.github.io/feelings/life/?iframe=1" id="struggle-game" frameborder="0"></iframe>
     <div class="instructions is-active">WASD or arrows to move</div>
 
-    <button class="escape">Esc to quit</button>
+    <button class="escape">Exit</button>
 
     <script>
         let started = false;
@@ -212,6 +212,9 @@
                 iframe.classList.remove('is-active');
             })
             instructionsElem.classList.remove('is-pressed');
+            // bring focus back into the scene
+            document.querySelector('#cameraRig').components['wasd-controls'].data.enabled = true;
+
         }
         escapeButton.addEventListener('click', function(event){
             
