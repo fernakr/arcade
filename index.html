@@ -162,14 +162,12 @@
             height="40" src="#brick-base"
             material="side: back; ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
             geometry="width: 10; height: 10" id="front wall"></a-plane>
-        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="-2.5 0 0"
-            rotation="0 90 0" width="40" height="40" geometry="" color="#000011" id="left wall" class="node">
-            <a-entity id="neon-left" geometry="depth: 0.1; height: 0.04; width: 10"
-            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
-        </a-plane>
+        <a-box roughness="1" repeat="40 40" src="#carpet" material="color: #000011; side: both;" shadow="" position="-2.5 0 0"
+            rotation="0 90 0" depth="1" width="40" height="40" geometry="" color="#000011" id="left wall" class="node">            
+        </a-box>
 
-        <a-plane roughness="1" repeat="40 40" src="#carpet" material="color: #000011;" shadow="" position="2.5 0 0"
-            rotation="0 -90 0" width="40" height="40" geometry="" color="#000011" id="right wall" class="node"></a-plane>
+        <a-box roughness="1" repeat="40 40" src="#carpet" material="color: #000011; side: both;" shadow="" position="2.5 0 0"
+            rotation="0 -90 0"  depth="1" width="40" height="40" geometry="" color="#000011" id="right wall" class="node"></a-box>
 
         <a-plane roughness="1" repeat="20 20" src="#carpet-base" shadow="" position="0 -0.71131 0" rotation="-90 0 0"
             width="40" height="40"
@@ -352,14 +350,28 @@
 
                 for (const obj of document.querySelectorAll(this.data.selector)) {                    
 
-                    if (this.myPos.y < obj.object3D.position.y || this.myPos.y > obj.object3D.position.y + obj.components.geometry.data.height) continue
-                    const distanceTo = new THREE.Vector3(this.myPos.x, 0, this.myPos.z).distanceTo(new THREE.Vector3(obj.object3D.position.x, 0, obj.object3D.position.z));
-                   
+                    const id = obj.object3D.el.id;
+                    if (id.includes('wall')){
+                        const wallRange = 0.5;
+                        if (id.includes('left')){                            
+                            if (this.myPos.x - obj.object3D.position.x <= wallRange){
+                                didHit = true
+                            }
+                        }else{
+                            if (obj.object3D.position.x - this.myPos.x <= wallRange){
+                                didHit = true
+                            }
+                        }
+                    }else{
+                        if (this.myPos.y < obj.object3D.position.y || this.myPos.y > obj.object3D.position.y + obj.components.geometry.data.height) continue
+                        const distanceTo = new THREE.Vector3(this.myPos.x, 0, this.myPos.z).distanceTo(new THREE.Vector3(obj.object3D.position.x, 0, obj.object3D.position.z));
+                    
 
-                    if (distanceTo <= this.data.distance) {                        
-                        didHit = true
-                        break
-                    }
+                        if (distanceTo <= this.data.distance) {                        
+                            didHit = true                            
+                        }
+                    }                    
+                    if (didHit) break;
                 }
                 if (didHit) {
                     this.el.object3D.position.copy(this.lastPosition)
