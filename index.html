@@ -352,7 +352,7 @@
 
                     const id = obj.object3D.el.id;
                     if (id.includes('wall')){
-                        const wallRange = 0.5;
+                        const wallRange = 0.75;
                         if (id.includes('left')){                            
                             if (this.myPos.x - obj.object3D.position.x <= wallRange){
                                 didHit = true
