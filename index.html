@@ -219,6 +219,11 @@
             
             closeAllGames();
         })
+        
+
+        
+ 
+        let startedTimer;
         document.addEventListener('keydown', function(event){
             const code = event.code;
             if (started === false){
@@ -227,6 +232,14 @@
                     instructionsElem.classList.remove('is-active');
                     instructionsElem.classList.add('is-pressed');
                     started = true;
+                    // clear interval
+                    if (startedTimer) clearInterval(startedTimer);
+                    startedTimer = setInterval(() => {
+                       instructionsElem.classList.remove('is-pressed');
+                       instructionsElem.classList.add('is-active');
+                       started = false;
+                    }, 15000);                  
+
                 }
             }else{
                 if (code === 'Space'){
