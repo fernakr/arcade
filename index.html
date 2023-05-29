@@ -224,6 +224,7 @@
         
  
         let startedTimer;
+        let played;        
         document.addEventListener('keydown', function(event){
             const code = event.code;
             if (started === false){
@@ -232,13 +233,15 @@
                     instructionsElem.classList.remove('is-active');
                     instructionsElem.classList.add('is-pressed');
                     started = true;
-                    // clear interval
-                    if (startedTimer) clearInterval(startedTimer);
-                    startedTimer = setInterval(() => {
-                       instructionsElem.classList.remove('is-pressed');
-                       instructionsElem.classList.add('is-active');
-                       started = false;
-                    }, 15000);                  
+                    if (!played){
+                        if (startedTimer) clearInterval(startedTimer);
+                        startedTimer = setInterval(() => {
+                        instructionsElem.classList.remove('is-pressed');
+                        instructionsElem.classList.add('is-active');
+                        started = false;
+                        }, 15000);       
+                    }
+                                   
 
                 }
             }else{
@@ -248,7 +251,7 @@
             }
         });
 
-        // document.addEventListener('keyup', function(event){
+        // document.addEvengatListener('keyup', function(event){
         //     const code = event.code;
         //     if (code === 'Space'){
                 
@@ -265,6 +268,8 @@
                     instructionsElem.classList.remove('is-pressed');
                     const activeClass = 'is-active';
                     if (selected){
+                        played = true;
+                        clearInterval(startedTimer);
                         instructionsElem.innerHTML = 'Press Space to Play';
                         instructionsElem.classList.add(activeClass);
                     }else{                        
@@ -369,11 +374,13 @@
         document.addEventListener('keydown', function(event){
             if (event.code === 'Space') {
 
-                const game = document.getElementById(`${selected.replace('-model','')}-game`);
                 
-                game.classList.add('is-active');
-                escapeButton.classList.add('is-active');
-                escapeButton.classList.remove('is-pressed');
+                const game = document.getElementById(`${selected.replace('-model','')}-game`);
+                if (game){                    
+                    game.classList.add('is-active');
+                    escapeButton.classList.add('is-active');
+                    escapeButton.classList.remove('is-pressed');
+                }                
 
             }
             if (event.code === 'Escape') {                
