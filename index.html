@@ -166,7 +166,7 @@
             material="side: back; ambientOcclusionMap: #brick-ao; displacementMap: #brick-displacement; normalMap: #brick-normal; roughnessMap: #brick-roughness"
             geometry="width: 10; height: 10" id="front wall"></a-plane>
         <a-box roughness="1" repeat="40 40" material="color: #000001; side: both;" shadow="" position="-2.5 0 0"
-            rotation="0 90 0" depth="1" width="40" height="40" geometry="" color="#000011" id="left wall" class="node">            
+            rotation="0 90 0" depth="1" width="40" height="40" geometry="" color="#000011" id="left wall" class="node">                        
         </a-box>
 
         <a-box roughness="1" repeat="40 40" material="color: #000001; side: both;" shadow="" position="2.5 0 0"
@@ -185,11 +185,22 @@
             position="1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
         <a-entity id="light-2" light="intensity: 1; castShadow: true; angle: 60.93; color: #0000ff; type: point"
             position="-1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
-        <a-entity position="-0.128 3.43 -6.222" id="neon" geometry="depth: 0.1; height: 0.04; width: 10"
-            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
-        <a-entity position="-0.128 0.31 -6.222" id="neon2" geometry="depth: 0.1; height: 0.04; width: 10"
-            material="transparent: true; blending: additive; color: #bc00ff; emissive: #ac1f9e; emissiveIntensity: 4"></a-entity>
-
+        <a-entity position="-0.128 3.43 -6.322" id="neon-top" geometry="depth: 0.025; height: 0.04; width: 10"
+            material="transparent: true; blending: additive; color: #ff0000; emissive: #ff8800; emissiveIntensity: 1"></a-entity>
+        <a-entity position="-0.128 0.31 -6.222" id="neon-bottom" geometry="depth: 0.05; height: 0.04; width: 10"
+            material="transparent: true; blending: additive; color: #ff0000; emissive: #ff8800; emissiveIntensity: 1"></a-entity>
+        <a-entity position="-2 3.43 -6.222" id="neon-left-top"
+            rotation="0 90 0" geometry="depth: 0.025; height: 0.04; width: 30"
+            material="transparent: true; blending: additive; color: #ff0000; emissive: #ff8800; emissiveIntensity: 1"></a-entity>
+        <a-entity position="-2 0.31 -6.222" id="neon-left-bottom"
+            rotation="0 90 0" geometry="depth: 0.025; height: 0.04; width: 30"
+            material="transparent: true; blending: additive; color: #ff0000; emissive: #ff8800; emissiveIntensity: 1"></a-entity>            
+        <a-entity position="2 3.43 -6.222" id="neon-right-top"
+            rotation="0 90 0" geometry="depth: 0.025; height: 0.04; width: 30"
+            material="transparent: true; blending: additive; color: #ff0000; emissive: #ff8800; emissiveIntensity: 1"></a-entity>
+        <a-entity position="2 0.31 -6.222" id="neon-right-bottom"
+            rotation="0 90 0" geometry="depth: 0.025; height: 0.04; width: 30"
+            material="transparent: true; blending: additive; color: #ff0000; emissive: #ff8800; emissiveIntensity: 1"></a-entity>                        
     </a-scene>
 
     <iframe src="https://fernakr.github.io/feelings/bingo/?iframe=1" id="bingo-game" frameborder="0"></iframe>
