@@ -1,0 +1,22 @@
+{
+  "name": "arcade",
+  "version": "1.0.0",
+  "description": "",
+  "main": "aframe.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fernakr/arcade.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fernakr/arcade/issues"
+  },
+  "homepage": "https://github.com/fernakr/arcade#readme",
+  "dependencies": {
+    "aframe": "^1.4.2"
+  }
+}

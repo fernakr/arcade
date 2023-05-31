@@ -91,21 +91,18 @@
         }
     </style>
     <script src="aframe.min.js"></script>
+    <!-- <script src="https://kripken.github.io/ammo.js/builds/ammo.wasm.js"></script> -->
 
-    <!-- <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script> -->
-
-    <script src="https://kripken.github.io/ammo.js/builds/ammo.wasm.js"></script>
-
-    <script
-        src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.js"></script>
+    <!-- <script
+        src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.js"></script> -->
 
 
 </head>
 
 <body>
 
-    <a-scene
-    vr-mode-ui="enabled: false">
+    <a-scene inspector="url: https://cdn.jsdelivr.net/gh/aframevr/aframe-inspector@master/dist/aframe-inspector.min.js"
+        vr-mode-ui="enabled: false">
 
 
 
@@ -138,7 +135,7 @@
             <img src="./assets/texture/brick/PaintedBricks001_1K_NormalGL.jpg" alt="" id="brick-normal-gl"/>
             <img src="./assets/texture/brick/PaintedBricks001_1K_Roughness.jpg" alt="" id="brick-roughness"/>
 
-
+            <a-asset-item id="sign" src="./assets/sign.gltf"></a-asset-item>
             <a-asset-item id="speaking" src="./assets/speaking.gltf"></a-asset-item>
             <a-asset-item id="struggle" src="./assets/struggle.gltf"></a-asset-item>
             <a-asset-item id="anxiety" src="./assets/anxiety.gltf"></a-asset-item>
@@ -181,6 +178,7 @@
             position="0.001 3.41437 0" rotation="-90 0 0" width="40" height="40" geometry="width: 20; height: 20"
             id="ceiling"></a-plane>
         <a-sky id="sky" color="#000"></a-sky>
+        <a-entity gltf-model="#sign" material="transparent: true; blending: additive; color: #000000; emissive: #000000; emissiveIntensity: 10" scale="0.25 0.25" position="0 2.6 -6"></a-entity>
         <a-entity id="light" light="intensity: 1; castShadow: true; angle: 60.93; color: #ff2200; type: point"
             position="1.1129 0.75338 -1.261" data-aframe-default-light="" aframe-injected=""></a-entity>
         <a-entity id="light-2" light="intensity: 1; castShadow: true; angle: 60.93; color: #0000ff; type: point"
@@ -211,7 +209,12 @@
 
     <button class="escape">Exit</button>
 
-    <script>
+    <script type="module">
+        //import AFRAME from 'aframe';
+        //THREE.BloomPass = require('./assets/jsm/UnrealBloomPass');
+
+        // import { UnrealBloomPass } from './assets/jsm/UnrealBloomPass.js';
+
         let started = false;
         const escapeButton = document.querySelector('.escape');
 
