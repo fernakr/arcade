@@ -61,6 +61,32 @@
             font-family: Geneva, Tahoma, sans-serif;
             text-transform: uppercase;            
         }
+            .instructions[data-text]:after{
+                content: attr(data-text);
+                display: block;
+                border: 1px solid var(--primary-color);
+                padding: 0.5rem;
+                color: var(--primary-color);
+                position: absolute;
+                text-transform: none;
+                left: 100%;
+                bottom: 0;
+                width: 300px;
+                text-align: left;
+                margin-left: 20px;
+                background-color: rgba(0,0,0,0.8);
+            }
+
+            .instructions[data-text]:before{                
+                border-bottom: 1px solid var(--primary-color);
+                width: 20px;
+                height: 0;
+                position: absolute;
+                content: '';
+                left: 100%;
+                bottom: 50%;
+                
+            }
 
             .instructions.is-active{
                 opacity: 0.8;
@@ -106,7 +132,11 @@
 
 
 
-        <a-entity camera position="0 1.6 7" wasd-controls="acceleration: 20" id="cameraRig"
+        <!-- 
+            test: position="0 10.6 7" 
+            original: position="0 1.6 7"
+        -->
+        <a-entity camera position="0 1.6 7"  wasd-controls="acceleration: 20" id="cameraRig"
             sphere-collider-constraint="selector: .node">
             <a-entity 
 
@@ -201,10 +231,14 @@
             material="transparent: true; blending: additive; color: #ff0000; emissive: #ff8800; emissiveIntensity: 1"></a-entity>                        
     </a-scene>
 
-    <iframe src="https://fernakr.github.io/feelings/bingo/?iframe=1" id="bingo-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/anxiety/?iframe=1" id="anxiety-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/speaking/?iframe=1" id="speaking-game" frameborder="0"></iframe>
-    <iframe src="https://fernakr.github.io/feelings/life/?iframe=1" id="struggle-game" frameborder="0"></iframe>
+    <!--
+        remote: fernakr.github.io
+        local: localhost:5501
+    -->
+    <iframe src="https://fernakr.github.io/feelings/bingo/?iframe=1" data-title="This bingo game is my attempt to dissect some complicated truths about being an Asian American. Part of this is prompted by this idea that those across the AAPI community share some universal patterns within our backgrounds whether it's recurring traits within our families, how society and the media treats us, or how we think of ourselves. And it also fascinates me to see reactions from those who come from other backgrounds and compare and contrast the overlap with our respective identities. Some of these things are boxes that I don't necessarily check for myself but I've heard recurring from others, and many are things that I've experienced myself." id="bingo-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/anxiety/?iframe=1" data-title="Wanted to capture some basic human conditions/behaviors and first on the list was anxiety. Certain things on the list distract you momentarily but other things lessen your anxiety bar." id="anxiety-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/speaking/?iframe=1" data-title="This is my attempt to capture the frustration I can feel trying to understand tagalog. Some phrases are easier to find than others. The struggle to understand can prevent me from fully grasping the story being told." id="speaking-game" frameborder="0"></iframe>
+    <iframe src="https://fernakr.github.io/feelings/life/?iframe=1" data-title="I wanted to capture the feel of trying to balance all of the different types of bandwidth in every day life" id="struggle-game" frameborder="0"></iframe>
     <div class="instructions is-active">WASD or arrows to move</div>
 
     <button class="escape">Exit</button>
@@ -278,7 +312,7 @@
         AFRAME.registerComponent('cursor-listener', {
             init: function () {
                 
-                const setInstructions = () => 
+                const setInstructions = (context) => 
                 {
                     instructionsElem.classList.remove('is-pressed');
                     const activeClass = 'is-active';
@@ -287,8 +321,14 @@
                         clearInterval(startedTimer);
                         instructionsElem.innerHTML = 'Press Space to Play';
                         instructionsElem.classList.add(activeClass);
+                        if (context){
+                            // convert  to line breaks
+                            //context = context.replace(/(\\r\\n)/g, '\\a');
+                            instructionsElem.setAttribute('data-text', context);
+                        }                        
                     }else{                        
                         instructionsElem.classList.remove(activeClass);
+                        instructionsElem.removeAttribute('data-text');
                     }
                     
                 }
@@ -298,8 +338,9 @@
                 })
                 this.el.addEventListener('mouseenter', function(event){                                        
                     
-                    selected = this.id;
-                    //console.log(selected);
+                    selected = this.id.replace('-model','');
+                    const game = getGame(selected);
+                    const context = game.getAttribute('data-title');
                     this.object3D.traverse((child) => {                            
                         //this.el.classlist.add('hovered');
                         if ( child instanceof THREE.Mesh  && child.name.includes('defaultMaterial003')) {
@@ -312,10 +353,10 @@
 
                         }
                     });
-                    setInstructions();
+                    setInstructions(context);
                 }); 
                 this.el.addEventListener('mouseleave', function (evt) {
-                    selected = null;
+                    selected = null;                    
                     this.object3D.traverse((child) => {
                         
                         if ( child instanceof THREE.Mesh && child.name.includes('defaultMaterial003')) {                        
@@ -331,6 +372,14 @@
                 // });
             }
         });
+
+        const getGame = (id) => {            
+            const game = document.getElementById(`${id}-game`);
+            if (game){
+                return game;
+            }
+            return null;
+        }
 
         AFRAME.registerComponent('sphere-collider-constraint', {
             schema: {
@@ -404,7 +453,7 @@
             if (event.code === 'Space') {
 
                 
-                const game = document.getElementById(`${selected.replace('-model','')}-game`);
+                const game = getGame(selected);
                 if (game){                    
                     game.classList.add('is-active');
                     escapeButton.classList.add('is-active');
