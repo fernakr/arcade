@@ -466,6 +466,8 @@
                     game.classList.add('is-active');
                     escapeButton.classList.add('is-active');
                     escapeButton.classList.remove('is-pressed');
+                    // focus on canvas inside of iframe
+                    game.contentWindow.focus();
                 }                
 
             }
